@@ -24,6 +24,8 @@ The project uses Docker Compose to start three services:
 
 ## Run
 
+Build and start the services:
+
 ```bash
 # Build the input and output images
 docker-compose build
