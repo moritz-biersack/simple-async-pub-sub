@@ -8,4 +8,7 @@ RUN pip install -r requirements.txt
 
 COPY . ./
 
+RUN groupadd -r flask && useradd --no-log-init -r -g flask flask
+USER flask
+
 CMD python app.py

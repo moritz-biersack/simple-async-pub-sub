@@ -7,7 +7,6 @@ services:
       context: ./output
       dockerfile: ./Dockerfile
     image: async_queue/output
-    #stdin_open: true
     tty: true
     depends_on:
       - redis
@@ -16,8 +15,6 @@ services:
       context: ./input
       dockerfile: ./Dockerfile
     image: async_queue/input
-    #stdin_open: true
-    #tty: true
     ports:
       - 5000:5000
     depends_on:

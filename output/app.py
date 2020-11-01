@@ -1,36 +1,27 @@
-import asyncio
-import aioredis
+import time
+import redis
 from prettyconf import config
 
 
-CHANNEL = config('CHANNEL', default='test')
-REDIS_HOST = config('REDIS_HOST', default='redis://redis')
+CHANNEL = config("CHANNEL", default="test")
+REDIS_HOST = config("REDIS_HOST", default="redis")
 
 
-async def main():
-    redis = await aioredis.create_redis_pool(REDIS_HOST)
+def main():
+    r = redis.Redis(host=REDIS_HOST, decode_responses=True)
+    p = r.pubsub(ignore_subscribe_messages=True)
+    p.subscribe(CHANNEL)
 
-    ch1, = await redis.subscribe(CHANNEL)
-    assert isinstance(ch1, aioredis.Channel)
-
-    async def reader(channel):
-        async for message in channel.iter():
-            print("Got message:", message)
-    asyncio.get_running_loop().create_task(reader(ch1))
-    # await redis.wait_closed()
-
-
-def run_server():
-    loop = asyncio.get_event_loop()
-
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        loop.close()
+    while True:
+        message = p.get_message()
+        if message:
+            print(message.get("data", ""))
+        time.sleep(0.001)
 
 
 if __name__ == "__main__":
-    print('Start listening...')
-    run_server()
+    print("Start listening...")
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass

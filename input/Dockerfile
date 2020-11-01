@@ -10,5 +10,8 @@ COPY . ./
 
 EXPOSE 5000
 
+RUN groupadd -r flask && useradd --no-log-init -r -g flask flask
+USER flask
+
 ENV FLASK_APP app.py
 CMD flask run --host=0.0.0.0
